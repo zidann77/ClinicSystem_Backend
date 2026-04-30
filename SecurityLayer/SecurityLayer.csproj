@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClinicDataAccess\ClinicDataAccess.csproj" />
-    <ProjectReference Include="..\SecurityLayer\SecurityLayer.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
   </ItemGroup>
 
 </Project>
