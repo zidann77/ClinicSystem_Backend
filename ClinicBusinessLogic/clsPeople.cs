@@ -121,5 +121,15 @@ namespace ClinicBusinessLogic
         public static bool DeletePerson(int ID) => clsPeopleDataAccess.DeletePerson(ID);
 
         public static List<PeopleDTO> GetAllPeople() => clsPeopleDataAccess.GetAllPeople();
+
+        public PeopleDTO ToDTO() => new PeopleDTO
+        {
+            ID = this.ID,
+            FirstName = this.FirstName,
+            SecondName = this.SecondName,
+            LastName = this.LastName,
+            Phone = this.Phone,
+            Email =this.Email
+        };
     }
 }
