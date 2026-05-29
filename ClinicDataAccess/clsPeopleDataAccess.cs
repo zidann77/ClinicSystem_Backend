@@ -102,7 +102,7 @@ namespace ClinicDataAccess
         public static bool UpdatePerson(PeopleDTO dto)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            using SqlCommand cmd = new SqlCommand("ppl.People_Update", con);
+            using SqlCommand cmd = new SqlCommand("ppl.Update_People", con);
 
             cmd.CommandType = CommandType.StoredProcedure;
 
@@ -122,7 +122,7 @@ namespace ClinicDataAccess
         public static bool DeletePerson(int id)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            using SqlCommand cmd = new SqlCommand("ppl.People_Delete", con);
+            using SqlCommand cmd = new SqlCommand("ppl.Delete_People", con);
 
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@ID", id);

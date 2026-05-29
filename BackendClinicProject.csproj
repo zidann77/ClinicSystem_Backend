@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ClinicBusinessLogic\**" />
+    <Compile Remove="ClinicDataAccess\**" />
+    <Compile Remove="ClinicDTO\**" />
+    <Compile Remove="SecurityLayer\**" />
+    <Content Remove="ClinicBusinessLogic\**" />
+    <Content Remove="ClinicDataAccess\**" />
+    <Content Remove="ClinicDTO\**" />
+    <Content Remove="SecurityLayer\**" />
+    <EmbeddedResource Remove="ClinicBusinessLogic\**" />
+    <EmbeddedResource Remove="ClinicDataAccess\**" />
+    <EmbeddedResource Remove="ClinicDTO\**" />
+    <EmbeddedResource Remove="SecurityLayer\**" />
+    <None Remove="ClinicBusinessLogic\**" />
+    <None Remove="ClinicDataAccess\**" />
+    <None Remove="ClinicDTO\**" />
+    <None Remove="SecurityLayer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
