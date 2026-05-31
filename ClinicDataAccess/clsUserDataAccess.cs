@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using ClinicDTO;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ClinicDataAccess
 {
@@ -27,7 +28,7 @@ namespace ClinicDataAccess
                         {
                             ID = (int)reader["ID"],
                             PersonID = (int)reader["PersonID"],
-                            UserName = reader["UserName"].ToString(),
+                            UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
                             Password = string.Empty // لا نرجع الباسورد في القوائم
@@ -57,14 +58,14 @@ namespace ClinicDataAccess
                         {
                             ID = (int)reader["ID"],
                             PersonID = (int)reader["PersonID"],
-                            UserName = reader["UserName"].ToString(),
+                            UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
-                            LastSeen = reader["LastSeen"] as DateTime?,
-                            FirstName = reader["FirstName"].ToString(),
-                            SecondName = reader["SecondName"].ToString(),
-                            LastName = reader["LastName"].ToString(),
-                            Phone = reader["Phone"].ToString(),
-                            Email = reader["Email"].ToString()
+                            LastSeen = reader["LastSeen"] as DateTime?,//Safe Casting أو الـ Safe Type Conversion
+                            FirstName = reader["FirstName"].ToString() ?? string.Empty,
+                            SecondName = reader["SecondName"].ToString() ?? string.Empty,
+                            LastName = reader["LastName"].ToString() ?? string.Empty,
+                            Phone = reader["Phone"].ToString() ?? string.Empty,
+                            Email = reader["Email"].ToString() ?? string.Empty
                         });
                     }
                 }
@@ -103,6 +104,7 @@ namespace ClinicDataAccess
             cmd.Parameters.AddWithValue("@UserName", user.UserName);
             cmd.Parameters.AddWithValue("@Password", user.Password); // هنا السر
             cmd.Parameters.AddWithValue("@Active", user.Active);
+            cmd.Parameters.AddWithValue("@LastSeen", user.LastSeen ?? (object)DBNull.Value);
 
             SqlParameter outputId = new SqlParameter("@NewID", SqlDbType.Int)
             {
@@ -117,7 +119,7 @@ namespace ClinicDataAccess
         }
 
       
-        public static UserDTO GetUserByID(int id)
+        public static UserDTO? GetUserByID(int id)
         {
             using (SqlConnection conn = new SqlConnection(clsDataAccessSettings.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("usr.Get_UserByID", conn))
@@ -134,8 +136,37 @@ namespace ClinicDataAccess
                         return new UserDTO
                         {
                             ID = (int)reader["ID"],
+                            UserName = reader["UserName"].ToString() ?? string.Empty,
+                            Active = (bool)reader["Active"],
+                            LastSeen = reader["LastSeen"] as DateTime?,
+                            Password = string.Empty 
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static UserDTO? GetUserByUserName(string username)
+        {
+            using (SqlConnection conn = new SqlConnection(clsDataAccessSettings.ConnectionString))
+            using (SqlCommand cmd = new SqlCommand("usr.GetUserByUserName", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@UserName", username);
+
+                conn.Open();
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new UserDTO
+                        {
+                            ID = (int)reader["ID"],
                             PersonID = (int)reader["PersonID"],
-                            UserName = reader["UserName"].ToString(),
+                            UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
                             Password = string.Empty 
@@ -156,14 +187,21 @@ namespace ClinicDataAccess
             cmd.Parameters.AddWithValue("@ID", user.ID);
             cmd.Parameters.AddWithValue("@UserName", user.UserName);
             cmd.Parameters.AddWithValue("@Active", user.Active);
-            cmd.Parameters.AddWithValue("@PersonID", user.PersonID);
-            cmd.Parameters.AddWithValue("@LastSeen", (object)user.LastSeen ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@LastSeen", user.LastSeen.HasValue ? user.LastSeen.Value: DBNull.Value);
 
             con.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
 
-      
+      public static bool IsUserNameExists(string username)
+        {
+            using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            using SqlCommand cmd = new SqlCommand("usr.IsUserNameExist", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@UserName", username );
+            con.Open();
+            return cmd.ExecuteNonQuery() > 0;
+        }
         public static bool DeleteUser(int id)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -173,6 +211,35 @@ namespace ClinicDataAccess
 
             con.Open();
             return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public static UserDTO? LogInUser(string UserName )
+        {
+            using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            using SqlCommand cmd = new SqlCommand("usr.LoginUser", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Username",UserName);
+
+            con.Open();
+
+            using( SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new UserDTO
+                    {
+                        ID = (int)reader["ID"],
+                        UserName = reader["UserName"].ToString() ?? string.Empty,
+                        Active = (bool)reader["Active"],
+                        LastSeen = reader["LastSeen"] as DateTime?,
+                        Password = reader["StoredHash"]?.ToString() ?? string.Empty
+                    };
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
     }
 }

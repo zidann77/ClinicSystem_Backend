@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using ClinicDTO;
 using ClinicBusinessLogic;
+using SecurityLayer; // تم إضافة الـ namespace الخاص بطبقة الحماية واللوجر
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BackendClinicProject
 {
@@ -17,18 +21,19 @@ namespace BackendClinicProject
         {
             try
             {
-                List<PeopleDTO> people = clsPerson.GetAllPeople();
+                List<clsPerson> people = clsPerson.GetAllPeople();
                 if (people == null || people.Count == 0)
                 {
                     return NotFound("No people found.");
                 }
                 else
-                    return Ok(people);
+                    return Ok(people.Select(P => P.ToDTO()));
             }
-            catch
+            catch (Exception ex)
             {
+            
+                clsLogger.LogException(ex, "Error occurred while retrieving all people.");
                 return StatusCode(500, "An error occurred while retrieving the data from the server.");
-
             }
         }
 
@@ -46,19 +51,19 @@ namespace BackendClinicProject
 
             try
             {
-                clsPerson Person = clsPerson.Find(id);
+                clsPerson? Person = clsPerson.Find(id);
                 if (Person == null)
                 {
                     return NotFound("No people found.");
                 }
                 else
                 {
-
                     return Ok(Person.ToDTO());
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                clsLogger.LogException(ex, $"Error occurred while retrieving person with ID: {id}.");
                 return StatusCode(500, "An error occurred while retrieving the data from the server.");
             }
         }
@@ -86,27 +91,19 @@ namespace BackendClinicProject
 
                 if (newPerson.Save())
                 {
-                    /* هذا السطر الاحترافي يقوم بثلاثة أشياء طبقاً لمعايير الـ REST API العالمية:
-   1. يرجع كود الحالة (201 Created) ليعلم العميل أن الإضافة تمت بنجاح.
-   2. البارامتر الأول ("GetPersonByID"): هو اسم الشهرة الداخلي لميثود الجلب، ليقوم السيرفر باستدعائها.
-   3. البارامتر الثاني (new { id = newPerson.ID }): عبارة عن (Anonymous Object) نمرر فيه الـ ID الجديد 
-      الذي تولد في قاعدة البيانات، ليقوم السيرفر بدمجه تلقائياً وتوليد رابط الوصول للشخص في الـ Header (Location).
-   4. البارامتر الثالث (newPerson.ToDTO()): يحول كائن البزنس لـ DTO نظيف ويرسله في الـ Body ليعرضه العميل فوراً.
-*/
-                    return CreatedAtRoute("GetPersonByID", new { id = newPerson.ID }, newPerson.ToDTO());
+                    return CreatedAtRoute("GetPersonByID", new { id = newPerson.PersonID }, newPerson.ToDTO());
                 }
                 else
                 {
                     return StatusCode(500, "An error occurred while saving the new person to the database.");
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                clsLogger.LogException(ex, "Error occurred while adding a new person.");
                 return StatusCode(500, "An error occurred while processing the request.");
             }
-
         }
-
 
         [HttpPut("{id}", Name = "UpdatePerson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -121,7 +118,7 @@ namespace BackendClinicProject
             }
             try
             {
-                clsPerson Updateperson = clsPerson.Find(id);
+                clsPerson? Updateperson = clsPerson.Find(id);
                 if (Updateperson == null)
                 {
                     return NotFound("Person not found.");
@@ -131,6 +128,7 @@ namespace BackendClinicProject
                 Updateperson.LastName = updatedPersonDTO.LastName;
                 Updateperson.Phone = updatedPersonDTO.Phone;
                 Updateperson.Email = updatedPersonDTO.Email;
+
                 if (Updateperson.Save())
                 {
                     return Ok(Updateperson.ToDTO());
@@ -140,8 +138,9 @@ namespace BackendClinicProject
                     return StatusCode(500, "An error occurred while updating the person in the database.");
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                clsLogger.LogException(ex, $"Error occurred while updating person with ID: {id}.");
                 return StatusCode(500, "An error occurred while processing the request.");
             }
         }
@@ -152,12 +151,9 @@ namespace BackendClinicProject
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult DeletePerson(int id)
-        // EXPLANATION:
-        // The 'if' block handles LOGICAL failures from the DB (e.g., Foreign Key blocking the delete, returning false).
-        // The 'catch' block handles RUNTIME crashes (e.g., DB connection lost, server down).
         {
             if (id <= 0)
-                return BadRequest($"InVaild ID{id}");
+                return BadRequest($"InVaild ID {id}");
             try
             {
                 if (clsPerson.Find(id) == null)
@@ -174,8 +170,9 @@ namespace BackendClinicProject
                     return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while executing delete.");
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                clsLogger.LogException(ex, $"Error occurred while deleting person with ID: {id}.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while executing delete.");
             }
         }

@@ -16,19 +16,19 @@ namespace ClinicBusinessLogic
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
-        public int ID { get; set; }
+        public int PersonID { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string SecondName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
+        public string ? Email { get; set; } = string.Empty;
 
         private readonly string _encryptionKey;
 
         public clsPerson()
         {
             _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
-            this.ID = -1;
+            this.PersonID = -1;
             Mode = enMode.AddNew;
         }
 
@@ -36,7 +36,7 @@ namespace ClinicBusinessLogic
         private clsPerson(PeopleDTO dto)
         {
             _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
-            this.ID = dto.ID;
+            this.PersonID = dto.ID;
             this.FirstName = dto.FirstName;
             this.SecondName = dto.SecondName;
             this.LastName = dto.LastName;
@@ -83,23 +83,23 @@ namespace ClinicBusinessLogic
                 SecondName = this.SecondName,
                 LastName = this.LastName,
                 Phone = clsAesEncryptionService.Encrypt(this.Phone, _encryptionKey),
-                Email = clsAesEncryptionService.Encrypt(this.Email, _encryptionKey)
+                Email = string.IsNullOrEmpty(this.Email) ? string.Empty: clsAesEncryptionService.Encrypt(this.Email, _encryptionKey)
             };
 
-            this.ID = clsPeopleDataAccess.AddPerson(dto);
-            return (this.ID != -1);
+            this.PersonID = clsPeopleDataAccess.AddPerson(dto);
+            return (this.PersonID != -1);
         }
 
         private bool _UpdatePerson()
         {
             var dto = new PeopleDTO
             {
-                ID = this.ID,
+                ID = this.PersonID,
                 FirstName = this.FirstName,
                 SecondName = this.SecondName,
                 LastName = this.LastName,
                 Phone = clsAesEncryptionService.Encrypt(this.Phone, _encryptionKey),
-                Email = clsAesEncryptionService.Encrypt(this.Email, _encryptionKey)
+                Email = string.IsNullOrEmpty(this.Email) ? string.Empty : clsAesEncryptionService.Encrypt(this.Email, _encryptionKey)
             };
 
             return clsPeopleDataAccess.UpdatePerson(dto);
@@ -120,16 +120,26 @@ namespace ClinicBusinessLogic
 
         public static bool DeletePerson(int ID) => clsPeopleDataAccess.DeletePerson(ID);
 
-        public static List<PeopleDTO> GetAllPeople() => clsPeopleDataAccess.GetAllPeople();
+        public static List<clsPerson> GetAllPeople()
+        {
+           List< PeopleDTO> DataList = clsPeopleDataAccess.GetAllPeople();
+            List<clsPerson> PeopleList = new List<clsPerson>();
+
+            foreach(PeopleDTO Record in DataList)
+            {
+                PeopleList.Add(new clsPerson(Record));
+            }
+            return PeopleList;
+        }
 
         public PeopleDTO ToDTO() => new PeopleDTO
         {
-            ID = this.ID,
+            ID = this.PersonID,
             FirstName = this.FirstName,
             SecondName = this.SecondName,
             LastName = this.LastName,
             Phone = this.Phone,
-            Email =this.Email
+            Email = string.IsNullOrEmpty(this.Email) ? string.Empty : this.Email
         };
     }
 }

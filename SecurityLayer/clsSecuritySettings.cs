@@ -16,7 +16,7 @@ namespace SecurityLayer
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            return configuration["Security:EncryptionKey"];
+            return configuration["Security:EncryptionKey"] ?? throw new Exception("Encryption key not found in configuration.");
         }
     }
 }

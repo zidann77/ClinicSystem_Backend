@@ -25,6 +25,7 @@ namespace SecurityLayer
             return $"{Convert.ToBase64String(salt)}:{Convert.ToBase64String(hash)}";
         }
 
+
         public static bool VerifyPassword(string password, string storedHash)
         {
             var parts = storedHash.Split(':');

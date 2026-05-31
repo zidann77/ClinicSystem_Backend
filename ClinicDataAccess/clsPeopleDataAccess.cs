@@ -36,7 +36,7 @@ namespace ClinicDataAccess
             con.Open();
             cmd.ExecuteNonQuery();
 
-            return (int)outputId.Value;
+            return outputId.Value != DBNull.Value ? (int)outputId.Value : -1;
         }
 
         // GET ALL
@@ -58,11 +58,11 @@ namespace ClinicDataAccess
                 list.Add(new PeopleDTO
                 {
                     ID = Convert.ToInt32(reader["ID"]),
-                    FirstName = reader["FirstName"].ToString(),
-                    SecondName = reader["SecondName"].ToString(),
-                    LastName = reader["LastName"].ToString(),
-                    Phone = reader["Phone"].ToString(),
-                    Email = reader["Email"].ToString()
+                    FirstName = reader["FirstName"].ToString() ?? string.Empty,
+                    SecondName = reader["SecondName"].ToString() ?? string.Empty,
+                    LastName = reader["LastName"].ToString() ?? string.Empty,
+                    Phone = reader["Phone"].ToString() ?? string.Empty,
+                    Email = reader["Email"].ToString() ?? string.Empty
                 });
             }
 
@@ -70,7 +70,7 @@ namespace ClinicDataAccess
         }
 
         // GET BY ID
-        public static PeopleDTO GetPersonById(int id)
+        public static PeopleDTO? GetPersonById(int id)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
             using SqlCommand cmd = new SqlCommand("ppl.GetByID_People", con);
@@ -87,11 +87,11 @@ namespace ClinicDataAccess
                 return new PeopleDTO
                 {
                     ID = Convert.ToInt32(reader["ID"]),
-                    FirstName = reader["FirstName"].ToString(),
-                    SecondName = reader["SecondName"].ToString(),
-                    LastName = reader["LastName"].ToString(),
-                    Phone = reader["Phone"].ToString(),
-                    Email = reader["Email"].ToString()
+                    FirstName = reader["FirstName"].ToString() ?? string.Empty,
+                    SecondName = reader["SecondName"].ToString() ?? string.Empty,
+                    LastName = reader["LastName"].ToString() ?? string.Empty,
+                    Phone = reader["Phone"].ToString() ?? string.Empty,
+                    Email = reader["Email"].ToString() ?? string.Empty
                 };
             }
            
