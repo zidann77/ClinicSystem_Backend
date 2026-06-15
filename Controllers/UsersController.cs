@@ -36,7 +36,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [HttpGet("AllUsersFull", Name = "GetAllUsersFull")]
+        [HttpGet("AllUsersFull", Name = "GetAllUsersView")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

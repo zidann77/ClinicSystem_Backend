@@ -117,10 +117,10 @@ namespace BackendClinicProject.Controllers
 
                 if (patient.Save())
                 {
-                  
+
                     newPatientDTO.ID = patient.ID;
 
-                    
+
                     return CreatedAtAction(nameof(GetPatientById), new { id = patient.ID }, newPatientDTO);
                 }
 
@@ -136,55 +136,79 @@ namespace BackendClinicProject.Controllers
         }
 
 
-        [HttpPut("{id:int}")]
-        public IActionResult UpdatePatient(int id, [FromBody] PatientDTO updatedPatientDTO)
+        [HttpPut("{id}", Name = "UpdatePatient")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult UpdatePatient(int id, PatientDTO updatedPatientDTO)
         {
-            if (updatedPatientDTO == null || id != updatedPatientDTO.ID)
+            try
             {
-                return BadRequest("Patient ID mismatch or data is corrupt.");
+                if (updatedPatientDTO == null || id != updatedPatientDTO.ID)
+                {
+                    return BadRequest("Patient ID mismatch or data is corrupt.");
+                }
+
+                var patient = clsPatient.Find(id);
+
+                if (patient == null)
+                {
+                    return NotFound($"Patient with ID {id} not found.");
+                }
+
+
+                patient.Status = updatedPatientDTO.Status;
+                patient.Age = updatedPatientDTO.Age;
+                patient.Notes = updatedPatientDTO.Notes ?? string.Empty;
+
+                if (patient.Save())
+                {
+                    return Ok("Patient updated successfully."); // أو NoContent() حسب رغبتك
+                }
+                else
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the patient.");
             }
-
-            var patient = clsPatient.Find(id);
-
-            if (patient == null)
+            catch (Exception ex)
             {
-                return NotFound($"Patient with ID {id} not found.");
+                clsLogger.LogException(ex, $"Error occurred while updating patient with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the patient.");
             }
-
-            // تحديث قيم كائن البزنس
-            patient.Status = updatedPatientDTO.Status;
-            patient.Age = updatedPatientDTO.Age;
-            patient.Notes = updatedPatientDTO.Notes ?? string.Empty;
-
-            if (patient.Save())
-            {
-                return Ok("Patient updated successfully."); // أو NoContent() حسب رغبتك
-            }
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the patient.");
         }
 
-        [HttpDelete("{id:int}")]
-        public IActionResult DeletePatient(int id)
+        [HttpDelete("{id}", Name = "DeletePatient")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult DeletePatient(int id)
         {
-            if (id <= 0)
+            try
             {
-                return BadRequest("Invalid Patient ID.");
-            }
+                if (id <= 0)
+                {
+                    return BadRequest("Invalid Patient ID.");
+                }
 
-            var patient = clsPatient.Find(id);
-            if (patient == null)
+                var patient = clsPatient.Find(id);
+                if (patient == null)
+                {
+                    return NotFound($"Patient with ID {id} not found.");
+                }
+
+                if (clsPatient.Delete(id))
+                {
+                    return Ok($"Patient with ID {id} has been deleted.");
+                }
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the patient.");
+            }
+            catch (Exception ex)
             {
-                return NotFound($"Patient with ID {id} not found.");
-            }
+                clsLogger.LogException(ex, $"Error occurred while deleting patient with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred: {ex.Message}");
 
-            if (clsPatient.Delete(id))
-            {
-                return Ok($"Patient with ID {id} has been deleted.");
             }
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the patient.");
         }
-
     }
 }

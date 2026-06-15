@@ -5,14 +5,14 @@ using ClinicDTO;
 
 namespace ClinicBusinessLogic
 {
-    public class clsPatient
+    public class clsPatient : clsPerson
     {
       
-        public enum enMode { AddNew = 0, Update = 1 }
-        public enMode Mode = enMode.AddNew;
+        public new  enum enMode { AddNew = 0, Update = 1 }
+        public new enMode Mode = enMode.AddNew;
 
         public int ID { get; set; }
-        public int PersonID { get; set; }
+      
         public byte Status { get; set; }
         public byte? Age { get; set; }
         public string Notes { get; set; } = string.Empty;
@@ -58,7 +58,7 @@ namespace ClinicBusinessLogic
         }
 
         
-        public static clsPatient? Find(int id)
+        public new static clsPatient? Find(int id)
         {
             PatientDTO? DTO = clsPatientDataAccess.GetPatientByID(id);
 
@@ -81,7 +81,7 @@ namespace ClinicBusinessLogic
             return clsPatientDataAccess.UpdatePatient(this.DTO);
         }
 
-        public bool Save()
+        public new bool Save()
         {
             switch (Mode)
             {

@@ -32,7 +32,7 @@ namespace ClinicDataAccess
             };
 
             cmd.Parameters.Add(outputId);
-
+ 
             con.Open();
             cmd.ExecuteNonQuery();
 
