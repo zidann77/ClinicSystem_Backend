@@ -109,7 +109,7 @@ namespace BackendClinicProject.Controllers
 
                 clsPatient patient = new clsPatient
                 {
-                    PersonID = newPatientDTO.PersonID,
+                    PersonINFO = clsPerson.Find(newPatientDTO.PersonID) ?? new clsPerson(),
                     Status = newPatientDTO.Status,
                     Age = newPatientDTO.Age,
                     Notes = newPatientDTO.Notes ?? string.Empty

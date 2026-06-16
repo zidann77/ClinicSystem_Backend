@@ -5,14 +5,13 @@ using ClinicDTO;
 
 namespace ClinicBusinessLogic
 {
-    public class clsPatient : clsPerson
+    public class clsPatient 
     {
       
-        public new  enum enMode { AddNew = 0, Update = 1 }
-        public new enMode Mode = enMode.AddNew;
-
+        public   enum enMode { AddNew = 0, Update = 1 }
+        public  enMode Mode = enMode.AddNew;
+        public clsPerson PersonINFO { get; set; } = new clsPerson();
         public int ID { get; set; }
-      
         public byte Status { get; set; }
         public byte? Age { get; set; }
         public string Notes { get; set; } = string.Empty;
@@ -25,7 +24,7 @@ namespace ClinicBusinessLogic
                 return new PatientDTO
                 {
                     ID = this.ID,
-                    PersonID = this.PersonID,
+                    PersonID =PersonINFO.PersonID,
                     Status = this.Status,
                     Age = this.Age,
                     Notes = this.Notes
@@ -33,11 +32,30 @@ namespace ClinicBusinessLogic
             }
         }
 
-      
+        public PatientFullDTO FullDTO
+        {
+            get
+            {
+                return new PatientFullDTO
+                {
+                    FirstName = this.PersonINFO.FirstName,
+                    SecondName = this.PersonINFO.SecondName,
+                    LastName = this.PersonINFO.LastName,
+                    Phone = this.PersonINFO.Phone,
+                    Email = this.PersonINFO.Email ?? string.Empty,
+                    Status = this.Status,
+                    Age = this.Age,
+                    Notes = this.Notes
+                };
+            }
+        }
+
+
         public clsPatient()
         {
             this.ID = -1;
-            this.PersonID = -1;
+            //   this.PersonID = -1;
+            this. PersonINFO = new clsPerson();  
             this.Status = 0;
             this.Age = null;
             this.Notes = string.Empty;
@@ -49,7 +67,8 @@ namespace ClinicBusinessLogic
         private clsPatient(PatientDTO DTO)
         {
             this.ID = DTO.ID;
-            this.PersonID = DTO.PersonID;
+            //    this.PersonID = DTO.PersonID;
+            this.PersonINFO = clsPerson.Find(DTO.PersonID)?? new clsPerson() ;
             this.Status = DTO.Status;
             this.Age = DTO.Age;
             this.Notes = DTO.Notes ?? string.Empty;
@@ -58,7 +77,7 @@ namespace ClinicBusinessLogic
         }
 
         
-        public new static clsPatient? Find(int id)
+        public static clsPatient? Find(int id)
         {
             PatientDTO? DTO = clsPatientDataAccess.GetPatientByID(id);
 
@@ -81,19 +100,26 @@ namespace ClinicBusinessLogic
             return clsPatientDataAccess.UpdatePatient(this.DTO);
         }
 
-        public new bool Save()
+        public  bool Save()
         {
             switch (Mode)
             {
                 case enMode.AddNew:
+                    PersonINFO.Mode = clsPerson.enMode.AddNew;
+                    if (!PersonINFO.Save())
+                    return false;
+                    
                     if (_Add())
                     {
-                        Mode = enMode.Update; // تغيير الحالة بعد النجاح ليصبح جاهزاً للتعديل مستقبلاً
+                        Mode = enMode.Update;
                         return true;
                     }
                     return false;
 
                 case enMode.Update:
+                    PersonINFO.Mode = clsPerson.enMode.Update;
+                    if (!PersonINFO.Save())
+                        return false;
                     return _Update();
             }
             return false;

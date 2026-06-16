@@ -20,13 +20,13 @@ namespace BackendClinicProject.Controllers
         {
             try
             {
-                List<clsUser> users = clsUser.GetAllUsers();
+                List<UserDTO> users = clsUser.GetAllUsers();
                 if (users == null || users.Count == 0)
                 {
                     return NotFound("No users found.");
                 }
 
-                return Ok(users.Select(u=> u.ToUserDTO()));
+                return Ok(users);
             }
             catch (Exception ex)
             {
@@ -44,13 +44,13 @@ namespace BackendClinicProject.Controllers
         {
             try
             {
-                List<clsUser> usersFull = clsUser.GetAllUsers_FullDAata();
+                List<UserFullDTO> usersFull = clsUser.GetAllUsers_FullDAata();
                 if (usersFull == null || usersFull.Count == 0)
                 {
                     return NotFound("No users view records found.");
                 }
 
-                return Ok(usersFull.Select(u => u.ToUserFullDTO()));
+                return Ok(usersFull);
             }
             catch (Exception ex)
             {
@@ -82,7 +82,7 @@ namespace BackendClinicProject.Controllers
                 return Ok(new UserDTO
                 {
                     ID = user.UserID,
-                    PersonID = user.PersonID,
+                    PersonID = user.PersonINFO.PersonID,
                     UserName = user.UserName,
                     Active = user.Active,
                     LastSeen = user.LastSeen
@@ -115,7 +115,7 @@ namespace BackendClinicProject.Controllers
 
                 clsUser user = new clsUser
                 {
-                    PersonID = newUserDTO.PersonID,
+                    PersonINFO = clsPerson.Find( newUserDTO.PersonID)?? new clsPerson(),
                     UserName = newUserDTO.UserName,
                     Password = newUserDTO.Password,
                     Active = newUserDTO.Active,
@@ -127,7 +127,7 @@ namespace BackendClinicProject.Controllers
                     UserDTO createdUserDTO = new UserDTO
                     {
                         ID = user.UserID,
-                        PersonID = user.PersonID,
+                        PersonID = user.PersonINFO.PersonID,
                         UserName = user.UserName,
                         Active = user.Active,
                         LastSeen = user.LastSeen
@@ -180,7 +180,7 @@ namespace BackendClinicProject.Controllers
                     UserDTO resultDTO = new UserDTO
                     {
                         ID = user.UserID,
-                        PersonID = user.PersonID,
+                        PersonID = user.PersonINFO.PersonID,
                         UserName = user.UserName,
                         Active = user.Active,
                         LastSeen = user.LastSeen
@@ -258,7 +258,7 @@ namespace BackendClinicProject.Controllers
                 UserDTO loggedInUser = new UserDTO
                 {
                     ID = user.UserID,
-                    PersonID = user.PersonID,
+                    PersonID = user.PersonINFO.PersonID,
                     UserName = user.UserName,
                     Active = user.Active,
                     LastSeen = user.LastSeen

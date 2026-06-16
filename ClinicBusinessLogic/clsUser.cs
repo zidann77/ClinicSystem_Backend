@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace ClinicBusinessLogic
 {
-    public class clsUser : clsPerson
+    public class clsUser 
     {
-        public new enum enMode { AddNew = 0, Update = 1 };
-        public new enMode Mode = enMode.AddNew;
+        public  enum enMode { AddNew = 0, Update = 1 };
+        public  enMode Mode = enMode.AddNew;
 
         public int UserID { get; set; }
         public string UserName { get; set; } = string.Empty;
@@ -17,17 +17,26 @@ namespace ClinicBusinessLogic
         public bool Active { get; set; }
         public DateTime? LastSeen { get; set; }
 
+        public clsPerson PersonINFO { get; set; } = new clsPerson();
+
+        public string FirstName { get; set; } = string.Empty;
+        public string SecondName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+
         private readonly string _encryptionKey;
 
         public clsUser()
         {
             _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
             this.UserID = -1;
-            this.PersonID = -1;
+           PersonINFO = new clsPerson();
             this.UserName = string.Empty;
             this.Password = string.Empty;
             this.Active = true;
             this.LastSeen = null;
+            this.PersonINFO = new clsPerson();
             Mode = enMode.AddNew;
         }
 
@@ -35,7 +44,7 @@ namespace ClinicBusinessLogic
         {
             _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
             this.UserID = dto.ID;
-            this.PersonID = dto.PersonID;
+            this.PersonINFO = clsPerson.Find(dto.PersonID) ?? new clsPerson();
             this.UserName = dto.UserName;
             this.Active = dto.Active;
             this.LastSeen = dto.LastSeen;
@@ -47,7 +56,7 @@ namespace ClinicBusinessLogic
         {
             _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
             this.UserID = dto.ID;
-            this.PersonID = dto.PersonID;
+            this.PersonINFO = clsPerson.Find(dto.PersonID) ?? new clsPerson();
             this.UserName = dto.UserName;
             this.Active = dto.Active;
             this.LastSeen = dto.LastSeen;
@@ -55,12 +64,12 @@ namespace ClinicBusinessLogic
             this.FirstName = dto.FirstName;
             this.SecondName = dto.SecondName;
             this.LastName = dto.LastName;
-            this.Email = string.IsNullOrEmpty(dto.Email) ? null : clsAesEncryptionService.Decrypt(dto.Email, _encryptionKey);
-            this.Phone = clsAesEncryptionService.Decrypt(dto.Phone, _encryptionKey);
+            this.Email = string.IsNullOrEmpty(dto.Email) ? string.Empty : clsAesEncryptionService.Decrypt(dto.Email, _encryptionKey); // can be empty not null
+            this.Phone = string.IsNullOrEmpty(dto.Phone) ? string.Empty : clsAesEncryptionService.Decrypt(dto.Phone, _encryptionKey);
             this.Mode = enMode.Update;
         }
 
-        public new static clsUser? Find(int ID)
+        public  static clsUser? Find(int ID)
         {
             var dto = clsUserDataAccess.GetUserByID(ID);
             return (dto != null) ? new clsUser(dto) : null;
@@ -70,7 +79,7 @@ namespace ClinicBusinessLogic
         {
             var dto = new UserDTO
             {
-                PersonID = this.PersonID,
+                PersonID = PersonINFO.PersonID,
                 UserName = this.UserName,
                 Password = clsPasswordHasher.HashPassword(this.Password),
                 Active = this.Active,
@@ -94,11 +103,14 @@ namespace ClinicBusinessLogic
             return clsUserDataAccess.UpdateUserBasicInfo(dto);
         }
 
-        public new bool Save()
+        public bool Save()
         {
             switch (Mode)
             {
                 case enMode.AddNew:
+                    PersonINFO.Mode = clsPerson.enMode.AddNew;
+                    if (!PersonINFO.Save())
+                        return false;
                     if (_AddNewUser())
                     {
                         Mode = enMode.Update;
@@ -107,6 +119,9 @@ namespace ClinicBusinessLogic
                     return false;
 
                 case enMode.Update:
+                    PersonINFO.Mode = clsPerson.enMode.Update;
+                    if (!PersonINFO.Save())
+                        return false;
                     return _UpdateUser();
             }
             return false;
@@ -115,16 +130,10 @@ namespace ClinicBusinessLogic
         public static bool DeleteUser(int ID)
             => clsUserDataAccess.DeleteUser(ID);
 
-        public static List<clsUser> GetAllUsers()
+        public static List<UserDTO> GetAllUsers()
         {
-            List<UserDTO> Records = clsUserDataAccess.GetAllUsers();
-            List<clsUser> users = new List<clsUser>();
+            return clsUserDataAccess.GetAllUsers();
 
-            foreach (UserDTO Record in Records)
-            {
-                users.Add(new clsUser(Record));
-            }
-            return users;
         }
 
         /// <summary>
@@ -137,16 +146,10 @@ namespace ClinicBusinessLogic
         /// PERFORMANCE: Utilizes an iterative mapping approach. For massive datasets, consider 
         /// asynchronous streaming or memory optimization patterns.
         /// </remarks>
-        public static List<clsUser> GetAllUsers_FullDAata()
+        public static List<UserFullDTO> GetAllUsers_FullDAata()
         {
-            List<UserFullDTO> Records = clsUserDataAccess.GetAllUsersView();
-            List<clsUser> users = new List<clsUser>();
-
-            foreach (UserFullDTO Record in Records)
-            {
-                users.Add(new clsUser(Record));
-            }
-            return users;
+            return clsUserDataAccess.GetAllUsersView();
+           
         }
 
         // login
@@ -173,7 +176,7 @@ namespace ClinicBusinessLogic
         }
 
 
-        public static bool IsUserNameExists(string username)
+        public static bool IsUserNameExists(string username) // prevent duplicate username when adding new user
             => clsUserDataAccess.IsUserNameExists(username);
 
         public UserDTO ToUserDTO()
@@ -181,7 +184,7 @@ namespace ClinicBusinessLogic
             return new UserDTO
             {
                 ID = this.UserID,
-                PersonID = this.PersonID,
+                PersonID = PersonINFO.PersonID,
                 UserName = this.UserName,
                 Active = this.Active,
                 LastSeen = this.LastSeen
@@ -194,7 +197,7 @@ namespace ClinicBusinessLogic
             return new UserFullDTO
             {
                 ID = this.UserID,
-                PersonID = this.PersonID,
+                PersonID = PersonINFO.PersonID,
                 UserName = this.UserName,
                 Active = this.Active,
                 LastSeen = this.LastSeen,

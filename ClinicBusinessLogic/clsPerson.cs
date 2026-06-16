@@ -11,10 +11,10 @@ namespace ClinicBusinessLogic
 {
     public class clsPerson
     {
-        // Inner Class DTO
        
-        public enum enMode { AddNew = 0, Update = 1 };
-        public enMode Mode = enMode.AddNew;
+       
+        public  enum enMode { AddNew = 0, Update = 1 };
+        public  enMode Mode = enMode.AddNew;
 
         public int PersonID { get; set; }
         public string FirstName { get; set; } = string.Empty;
@@ -32,7 +32,7 @@ namespace ClinicBusinessLogic
             Mode = enMode.AddNew;
         }
 
-        // Constructor يحول من الـ Inner DTO إلى البزنس أوبجكت
+       
         private clsPerson(PeopleDTO dto)
         {
             _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
@@ -41,7 +41,7 @@ namespace ClinicBusinessLogic
             this.SecondName = dto.SecondName;
             this.LastName = dto.LastName;
 
-            // فك التشفير
+           
             this.Phone = !string.IsNullOrEmpty(dto.Phone)
                 ? clsAesEncryptionService.Decrypt(dto.Phone, _encryptionKey)
                 : string.Empty;
@@ -55,12 +55,12 @@ namespace ClinicBusinessLogic
 
         public static clsPerson? Find(int ID)
         {
-            // نستخدم الـ DTO الموجود في الـ Data Access لجلب البيانات أولاً
+            
             var dataDto = clsPeopleDataAccess.GetPersonById(ID);
 
             if (dataDto != null)
             {
-                // تحويل من DTO الداتا أكسس إلى Inner DTO البزنس
+               
                 return new clsPerson(new PeopleDTO
                 {
                     ID = dataDto.ID,
