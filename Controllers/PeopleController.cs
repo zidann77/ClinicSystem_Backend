@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ClinicDTO;
 using ClinicBusinessLogic;
-using SecurityLayer; // تم إضافة الـ namespace الخاص بطبقة الحماية واللوجر
+using BackendClinicProject.GlobalClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +21,13 @@ namespace BackendClinicProject
         {
             try
             {
-                List<clsPerson> people = clsPerson.GetAllPeople();
+                List<PeopleDTO> people = clsPerson.GetAllPeople();
                 if (people == null || people.Count == 0)
                 {
                     return NotFound("No people found.");
                 }
                 else
-                    return Ok(people.Select(P => P.ToDTO()));
+                    return Ok(people);
             }
             catch (Exception ex)
             {

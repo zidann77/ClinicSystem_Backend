@@ -2,7 +2,7 @@
 using ClinicDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SecurityLayer;
+using BackendClinicProject.GlobalClasses;
 using System.Collections.Generic;
 
 namespace BackendClinicProject.Controllers

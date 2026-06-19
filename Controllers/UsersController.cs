@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ClinicDTO;
 using ClinicBusinessLogic;
-using SecurityLayer;
+using BackendClinicProject.GlobalClasses;
 using System;
 using System.Collections.Generic;
 
