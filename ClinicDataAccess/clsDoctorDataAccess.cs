@@ -1,17 +1,18 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using ClinicDTO;
+using Microsoft.Data.SqlClient;
+using SecurityLayer;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ClinicDTO;
 
 namespace ClinicDataAccess
 {
     public class clsDoctorDataAccess
     {
-        
+        private readonly static string EncryptionKey = clsSecuritySettings.GetEncryptionKey();
         public static int AddDoctor(DoctorDTO dto)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -144,9 +145,9 @@ namespace ClinicDataAccess
                     FirstName = reader["FirstName"].ToString() ?? string.Empty,
                     SecondName = reader["SecondName"].ToString() ?? string.Empty,
                     LastName = reader["LastName"].ToString() ?? string.Empty,
-                    Phone = reader["Phone"].ToString() ?? string.Empty,
-                    Email = reader["Email"].ToString() ?? string.Empty,
-                    Specialization = reader["Specialization"].ToString() ?? string.Empty,
+                    Phone = string.IsNullOrWhiteSpace(reader["Phone"].ToString()) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Phone"]?.ToString() ?? string.Empty, EncryptionKey),
+                    Email = (reader["Email"] == DBNull.Value || string.IsNullOrWhiteSpace(reader["Email"].ToString())) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Email"].ToString() ?? string.Empty, EncryptionKey),
+                Specialization = reader["Specialization"].ToString() ?? string.Empty,
                     Notes = reader["Notes"].ToString() ?? string.Empty,
                     Available = Convert.ToBoolean(reader["Available"])
                 });

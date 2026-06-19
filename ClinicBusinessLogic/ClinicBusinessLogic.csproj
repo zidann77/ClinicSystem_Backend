@@ -9,7 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ClinicDataAccess\ClinicDataAccess.csproj" />
     <ProjectReference Include="..\ClinicDTO\ClinicDTO.csproj" />
-    <ProjectReference Include="..\SecurityLayer\SecurityLayer.csproj" />
   </ItemGroup>
 
 </Project>
