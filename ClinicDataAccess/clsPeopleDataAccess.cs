@@ -6,11 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ClinicDTO;
+using SecurityLayer;
 
 namespace ClinicDataAccess
 {
     public class clsPeopleDataAccess
     {
+
+        private readonly static string EncryptionKey = clsSecuritySettings.GetEncryptionKey();
        
         // INSERT
         public static int AddPerson(PeopleDTO dto)
@@ -23,8 +26,13 @@ namespace ClinicDataAccess
             cmd.Parameters.AddWithValue("@FirstName", dto.FirstName);
             cmd.Parameters.AddWithValue("@SecondName", dto.SecondName);
             cmd.Parameters.AddWithValue("@LastName", dto.LastName);
-            cmd.Parameters.AddWithValue("@Phone", dto.Phone);
-            cmd.Parameters.AddWithValue("@Email", dto.Email);
+            cmd.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(dto.Email)
+
+                 ? DBNull.Value
+                 : (object)clsAesEncryptionService.Encrypt(dto.Email, EncryptionKey));
+
+            // Fixed Phone Logic
+            cmd.Parameters.AddWithValue("@Phone", (object)clsAesEncryptionService.Encrypt(dto.Phone ?? string.Empty, EncryptionKey));
 
             SqlParameter outputId = new SqlParameter("@NewID", SqlDbType.Int)
             {
@@ -61,8 +69,8 @@ namespace ClinicDataAccess
                     FirstName = reader["FirstName"].ToString() ?? string.Empty,
                     SecondName = reader["SecondName"].ToString() ?? string.Empty,
                     LastName = reader["LastName"].ToString() ?? string.Empty,
-                    Phone = reader["Phone"].ToString() ?? string.Empty,
-                    Email = reader["Email"].ToString() ?? string.Empty
+                    Phone = string.IsNullOrWhiteSpace(reader["Phone"].ToString()) ? string.Empty: clsAesEncryptionService.Decrypt(reader["Phone"]?.ToString() ?? string.Empty, EncryptionKey),
+                    Email = (reader["Email"] == DBNull.Value || string.IsNullOrWhiteSpace(reader["Email"].ToString())) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Email"].ToString()??string.Empty, EncryptionKey)
                 });
             }
 
@@ -84,14 +92,15 @@ namespace ClinicDataAccess
 
             if (reader.Read())
             {
+
                 return new PeopleDTO
                 {
                     ID = Convert.ToInt32(reader["ID"]),
                     FirstName = reader["FirstName"].ToString() ?? string.Empty,
                     SecondName = reader["SecondName"].ToString() ?? string.Empty,
                     LastName = reader["LastName"].ToString() ?? string.Empty,
-                    Phone = reader["Phone"].ToString() ?? string.Empty,
-                    Email = reader["Email"].ToString() ?? string.Empty
+                    Phone = string.IsNullOrWhiteSpace(reader["Phone"].ToString()) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Phone"]?.ToString() ?? string.Empty, EncryptionKey),
+                    Email = (reader["Email"] == DBNull.Value || string.IsNullOrWhiteSpace(reader["Email"].ToString())) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Email"].ToString()??string.Empty, EncryptionKey)
                 };
             }
            
@@ -110,8 +119,13 @@ namespace ClinicDataAccess
             cmd.Parameters.AddWithValue("@FirstName", dto.FirstName);
             cmd.Parameters.AddWithValue("@SecondName", dto.SecondName);
             cmd.Parameters.AddWithValue("@LastName", dto.LastName);
-            cmd.Parameters.AddWithValue("@Phone", dto.Phone);
-            cmd.Parameters.AddWithValue("@Email", dto.Email);
+
+            cmd.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(dto.Email)
+                 ? DBNull.Value
+                 : (object)clsAesEncryptionService.Encrypt(dto.Email, EncryptionKey));
+
+       
+            cmd.Parameters.AddWithValue("@Phone",  (object)clsAesEncryptionService.Encrypt(dto.Phone ?? string.Empty , EncryptionKey));
 
             con.Open();
 

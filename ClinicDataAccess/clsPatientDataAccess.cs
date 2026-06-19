@@ -1,13 +1,15 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using ClinicDTO;
+using Microsoft.Data.SqlClient;
+using SecurityLayer;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using ClinicDTO;
 
 namespace ClinicDataAccess
 {
     public class clsPatientDataAccess
     {
+        private readonly static string EncryptionKey = clsSecuritySettings.GetEncryptionKey();
         // 1. Insert_Patient
         public static int AddPatient(PatientDTO patient)
         {
@@ -138,8 +140,8 @@ namespace ClinicDataAccess
                             FirstName = reader["FirstName"].ToString() ?? string.Empty,
                             SecondName = reader["SecondName"].ToString() ?? string.Empty,
                             LastName = reader["LastName"].ToString() ?? string.Empty,
-                            Phone = reader["Phone"].ToString() ?? string.Empty,
-                            Email = reader["Email"].ToString() ?? string.Empty,
+                            Phone = clsAesEncryptionService.Decrypt(reader["Phone"]?.ToString() ?? string.Empty, EncryptionKey),
+                            Email = (reader["Email"] == DBNull.Value || string.IsNullOrWhiteSpace(reader["Email"].ToString())) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Email"].ToString() ?? string.Empty, EncryptionKey),
                             Status = (byte)reader["Status"],
                             Age = reader["Age"] as byte?, // تحويل آمن للقيم التي تقبل NULL
                             Notes = reader["Notes"].ToString() ?? string.Empty
@@ -151,3 +153,4 @@ namespace ClinicDataAccess
         }
     }
 }
+

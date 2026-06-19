@@ -25,11 +25,10 @@ namespace ClinicBusinessLogic
         public string Phone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
-        private readonly string _encryptionKey;
-
+       
         public clsUser()
         {
-            _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
+            
             this.UserID = -1;
            PersonINFO = new clsPerson();
             this.UserName = string.Empty;
@@ -42,7 +41,7 @@ namespace ClinicBusinessLogic
 
         private clsUser(UserDTO dto)
         {
-            _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
+           
             this.UserID = dto.ID;
             this.PersonINFO = clsPerson.Find(dto.PersonID) ?? new clsPerson();
             this.UserName = dto.UserName;
@@ -54,7 +53,7 @@ namespace ClinicBusinessLogic
 
         private clsUser(UserFullDTO dto)
         {
-            _encryptionKey = clsSecuritySettings.GetEncryptionKey() ?? string.Empty;
+            
             this.UserID = dto.ID;
             this.PersonINFO = clsPerson.Find(dto.PersonID) ?? new clsPerson();
             this.UserName = dto.UserName;
@@ -64,8 +63,8 @@ namespace ClinicBusinessLogic
             this.FirstName = dto.FirstName;
             this.SecondName = dto.SecondName;
             this.LastName = dto.LastName;
-            this.Email = string.IsNullOrEmpty(dto.Email) ? string.Empty : clsAesEncryptionService.Decrypt(dto.Email, _encryptionKey); // can be empty not null
-            this.Phone = string.IsNullOrEmpty(dto.Phone) ? string.Empty : clsAesEncryptionService.Decrypt(dto.Phone, _encryptionKey);
+            this.Email = string.IsNullOrEmpty(dto.Email) ? string.Empty : dto.Email; // can be empty not null
+            this.Phone = string.IsNullOrEmpty(dto.Phone) ? string.Empty : dto.Phone;
             this.Mode = enMode.Update;
         }
 
@@ -81,7 +80,7 @@ namespace ClinicBusinessLogic
             {
                 PersonID = PersonINFO.PersonID,
                 UserName = this.UserName,
-                Password = clsPasswordHasher.HashPassword(this.Password),
+                Password = this.Password,
                 Active = this.Active,
                 LastSeen = this.LastSeen
             };
@@ -119,7 +118,7 @@ namespace ClinicBusinessLogic
                     return false;
 
                 case enMode.Update:
-                    PersonINFO.Mode = clsPerson.enMode.Update;
+                  
                     if (!PersonINFO.Save())
                         return false;
                     return _UpdateUser();
@@ -156,22 +155,13 @@ namespace ClinicBusinessLogic
 
         public static clsUser? Login(string userName, string password)
         {
-            UserDTO? User = clsUserDataAccess.LogInUser(userName);
-
+            UserDTO? User = clsUserDataAccess.LogInUser(userName, password);
 
             if (User != null)
             {
-                if (clsPasswordHasher.VerifyPassword(password, User.Password))
-                {
-                   
-                    clsUser user = new clsUser(User);
-                    user.LastSeen = DateTime.Now;
-                    user.Save();
-                    return user;
-                }
-
+                return new clsUser(User);
             }
-                return null;
+            return null;
 
         }
 

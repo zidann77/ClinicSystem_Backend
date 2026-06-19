@@ -1,15 +1,16 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using ClinicDTO;
+using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
+using SecurityLayer;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using ClinicDTO;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ClinicDataAccess
 {
     public class clsUserDataAccess
     {
-        
+        private readonly static string EncryptionKey = clsSecuritySettings.GetEncryptionKey();
         public static List<UserDTO> GetAllUsers()
         {
             var list = new List<UserDTO>();
@@ -64,8 +65,8 @@ namespace ClinicDataAccess
                             FirstName = reader["FirstName"].ToString() ?? string.Empty,
                             SecondName = reader["SecondName"].ToString() ?? string.Empty,
                             LastName = reader["LastName"].ToString() ?? string.Empty,
-                            Phone = reader["Phone"].ToString() ?? string.Empty,
-                            Email = reader["Email"].ToString() ?? string.Empty
+                            Phone = clsAesEncryptionService.Decrypt(reader["Phone"]?.ToString() ?? string.Empty, EncryptionKey),
+                            Email = (reader["Email"] == DBNull.Value || string.IsNullOrWhiteSpace(reader["Email"].ToString())) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Email"].ToString() ?? string.Empty, EncryptionKey)
                         });
                     }
                 }
@@ -102,7 +103,7 @@ namespace ClinicDataAccess
 
             cmd.Parameters.AddWithValue("@PersonID", user.PersonID);
             cmd.Parameters.AddWithValue("@UserName", user.UserName);
-            cmd.Parameters.AddWithValue("@Password", user.Password); // هنا السر
+            cmd.Parameters.AddWithValue("@Password", clsPasswordHasher.HashPassword(user.Password));
             cmd.Parameters.AddWithValue("@Active", user.Active);
             cmd.Parameters.AddWithValue("@LastSeen", user.LastSeen ?? (object)DBNull.Value);
 
@@ -213,7 +214,7 @@ namespace ClinicDataAccess
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        public static UserDTO? LogInUser(string UserName )
+        public static UserDTO? LogInUser(string UserName , string password)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
             using SqlCommand cmd = new SqlCommand("usr.LoginUser", con);
@@ -226,14 +227,19 @@ namespace ClinicDataAccess
             {
                 if (reader.Read())
                 {
-                    return new UserDTO
+                    if (clsPasswordHasher.VerifyPassword(password, reader["StoredHash"].ToString() ?? string.Empty))
+                        return null;
+                    else
                     {
-                        ID = (int)reader["ID"],
-                        UserName = reader["UserName"].ToString() ?? string.Empty,
-                        Active = (bool)reader["Active"],
-                        LastSeen = reader["LastSeen"] as DateTime?,
-                        Password = reader["StoredHash"]?.ToString() ?? string.Empty
-                    };
+                        return new UserDTO
+                        {
+                            ID = (int)reader["ID"],
+                            UserName = reader["UserName"].ToString() ?? string.Empty,
+                            Active = (bool)reader["Active"],
+                            LastSeen = reader["LastSeen"] as DateTime?,
+                            Password = reader["StoredHash"]?.ToString() ?? string.Empty
+                        };
+                    }
                 }
                 else
                 {

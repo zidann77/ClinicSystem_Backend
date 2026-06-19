@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClinicDTO\ClinicDTO.csproj" />
+    <ProjectReference Include="..\SecurityLayer\SecurityLayer.csproj" />
   </ItemGroup>
 
 </Project>
