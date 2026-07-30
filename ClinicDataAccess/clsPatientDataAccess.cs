@@ -10,7 +10,7 @@ namespace ClinicDataAccess
     public class clsPatientDataAccess
     {
         private readonly static string EncryptionKey = clsSecuritySettings.GetEncryptionKey();
-        // 1. Insert_Patient
+        
         public static int AddPatient(PatientDTO patient)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -34,7 +34,7 @@ namespace ClinicDataAccess
             return (outputId.Value != DBNull.Value) ? (int)outputId.Value : -1;
         }
 
-        // 2. Update_Patient
+    
         public static bool UpdatePatient(PatientDTO patient)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -91,7 +91,7 @@ namespace ClinicDataAccess
             return list;
         }
 
-        // 5. Get_PatientByID
+ 
         public static PatientDTO? GetPatientByID(int id)
         {
             using (SqlConnection conn = new SqlConnection(clsDataAccessSettings.ConnectionString))

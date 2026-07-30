@@ -11,7 +11,7 @@ namespace ClinicDataAccess
 {
     public class clsInvoiceDataAccess
     {
-        // INSERT
+        
         public static int AddInvoice(InvoiceDTO dto)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -37,7 +37,7 @@ namespace ClinicDataAccess
             return outputId.Value != DBNull.Value ? (int)outputId.Value : -1;
         }
 
-        // GET BY ID
+        
         public static InvoiceDTO? GetInvoiceById(int id)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -65,7 +65,7 @@ namespace ClinicDataAccess
             return null;
         }
 
-        // GET ALL
+       
         public static List<InvoiceDTO> GetAllInvoices()
         {
             List<InvoiceDTO> list = new List<InvoiceDTO>();
@@ -94,7 +94,7 @@ namespace ClinicDataAccess
             return list;
         }
 
-        // UPDATE
+    
         public static bool UpdateInvoice(InvoiceDTO dto)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -113,7 +113,7 @@ namespace ClinicDataAccess
             return cmd.ExecuteNonQuery() > 0;
         }
 
-        // DELETE
+       
         public static bool DeleteInvoice(int id)
         {
             using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
