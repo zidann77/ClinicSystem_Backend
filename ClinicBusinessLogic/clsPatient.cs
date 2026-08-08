@@ -16,7 +16,7 @@ namespace ClinicBusinessLogic
         public byte? Age { get; set; }
         public string Notes { get; set; } = string.Empty;
 
-        // property 
+       
         public PatientDTO DTO
         {
             get

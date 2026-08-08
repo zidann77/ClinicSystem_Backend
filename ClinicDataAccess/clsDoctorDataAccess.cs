@@ -105,9 +105,9 @@ namespace ClinicDataAccess
             using SqlCommand cmd = new SqlCommand("doc.GetAll_Doctors", con);
 
             cmd.CommandType = CommandType.StoredProcedure;
-
+            con.Open();
             using SqlDataReader reader = cmd.ExecuteReader();
-             con.Open();
+             
 
             while(reader.Read())
             {

@@ -32,7 +32,6 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-
         [HttpGet("AllDoctorsView", Name = "GetAllDoctorsView")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -82,7 +81,6 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-
         [HttpDelete("{id}", Name = "DeleteDoctor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -109,7 +107,6 @@ namespace BackendClinicProject.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred: {ex.Message}");
             }
         }
-
 
         [HttpPost ("AddNew", Name = "AddDoctor")]
         [ProducesResponseType(StatusCodes.Status201Created)]

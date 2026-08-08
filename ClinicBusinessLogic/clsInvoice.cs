@@ -10,13 +10,41 @@ namespace ClinicBusinessLogic
         public enum enMode { AddNew = 0, Update = 1 }
         public enMode Mode = enMode.AddNew;
 
+        public enum enPaymentMethod { NotSet = 0, Cash = 1, CreditCard = 2, Insurance = 3 }
+
+        public enum enInvoiceStatus { Pending = 1, Paid = 2, Cancelled = 3, Overdue = 4 }
+
+        public enPaymentMethod PaymentMethod
+        {
+            get
+            {
+                return (enPaymentMethod)Method;
+            }
+            set
+            {
+                Method = (byte)value;
+            }
+        }
+
+        public enInvoiceStatus InvoiceStatus
+        {
+            get
+            {
+                return (enInvoiceStatus)Status;
+            }
+            set
+            {
+                Status = (byte)value;
+            }
+        }
+
         public int ID { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
         public byte Method { get; set; }
         public byte Status { get; set; }
 
-        // DTO Property mapping internal state out to a data transmission object
+     
         public InvoiceDTO DTO
         {
             get
@@ -32,19 +60,19 @@ namespace ClinicBusinessLogic
             }
         }
 
-        // Default Constructor (AddNew Mode)
+       
         public clsInvoice()
         {
             this.ID = -1;
             this.Date = DateTime.Now;
             this.Amount = 0.00m;
-            this.Method = 0;
-            this.Status = 0;
+            this.Method = (byte)enPaymentMethod.NotSet;
+            this.Status = (byte)enInvoiceStatus.Pending;
 
             Mode = enMode.AddNew;
         }
 
-        // Private Constructor (Update Mode)
+      
         private clsInvoice(InvoiceDTO DTO)
         {
             this.ID = DTO.ID;
@@ -56,7 +84,6 @@ namespace ClinicBusinessLogic
             Mode = enMode.Update;
         }
 
-        // FIND INVOICE BY ID
         public static clsInvoice? Find(int id)
         {
             InvoiceDTO? DTO = clsInvoiceDataAccess.GetInvoiceById(id);
@@ -68,20 +95,20 @@ namespace ClinicBusinessLogic
             return null;
         }
 
-        // INTERNAL ADD
+      
         private bool _Add()
         {
             this.ID = clsInvoiceDataAccess.AddInvoice(this.DTO);
             return (this.ID != -1);
         }
 
-        // INTERNAL UPDATE
+      
         private bool _Update()
         {
             return clsInvoiceDataAccess.UpdateInvoice(this.DTO);
         }
 
-        // SAVE METHOD (Saves current state based on entity mode)
+       
         public bool Save()
         {
             switch (Mode)
@@ -100,13 +127,13 @@ namespace ClinicBusinessLogic
             return false;
         }
 
-        // DELETE INVOICE
+      
         public static bool Delete(int id)
         {
             return clsInvoiceDataAccess.DeleteInvoice(id);
         }
 
-        // GET ALL INVOICES
+       
         public static List<InvoiceDTO> GetAllInvoices()
         {
             return clsInvoiceDataAccess.GetAllInvoices();

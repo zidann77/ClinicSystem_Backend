@@ -145,9 +145,9 @@ namespace BackendClinicProject.Controllers
         {
             try
             {
-                if (updatedPatientDTO == null || id != updatedPatientDTO.ID)
+                if (updatedPatientDTO == null || id <=0)
                 {
-                    return BadRequest("Patient ID mismatch or data is corrupt.");
+                    return BadRequest("Patient data is corrupt.");
                 }
 
                 var patient = clsPatient.Find(id);
