@@ -29,6 +29,7 @@ namespace ClinicDataAccess
                 cmd.Parameters.AddWithValue("@Notes",
                     (object?)dto.Notes ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@DoctorID", dto.DoctorID);
+
                 cmd.Parameters.AddWithValue("@MedicalRecordID",
                     (object?)dto.MedicalRecordID ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@InvoiceID",

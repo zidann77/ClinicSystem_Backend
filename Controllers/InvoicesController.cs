@@ -136,7 +136,7 @@ namespace BackendClinicProject.Controllers
                 if (!isUpdated)
                     return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the invoice.");
                 else
-                    return Ok("Invoice updated successfully.");
+                    return Ok(existingInvoice.DTO);
             }
             catch (Exception ex)
             {

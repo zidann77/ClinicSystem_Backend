@@ -20,8 +20,19 @@ namespace ClinicDTO
 
         public int DoctorID { get; set; }
 
-        public int? MedicalRecordID { get; set; }
+        private int? _MedicalRecordID;
+        private int? _InvoiceID;
 
-        public int? InvoiceID { get; set; }
+        public int? MedicalRecordID
+        {
+            get => _MedicalRecordID;
+            set => _MedicalRecordID = value == 0 ? null : value;
+        }
+
+        public int? InvoiceID
+        {
+            get => _InvoiceID;
+            set => _InvoiceID = value == 0 ? null : value;
+        }
     }
 }

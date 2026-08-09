@@ -164,7 +164,7 @@ namespace BackendClinicProject.Controllers
             int id,
             [FromBody] AppointmentDTO appointmentDTO)
         {
-            if (id <= 0 || appointmentDTO == null || id != appointmentDTO.ID)
+            if (id <= 0 || appointmentDTO == null || id <=0)
                 return BadRequest("Invalid ID or appointment data.");
 
 
@@ -198,7 +198,7 @@ namespace BackendClinicProject.Controllers
                         "An error occurred while updating the appointment.");
 
 
-                return Ok("Appointment updated successfully.");
+                return Ok(existingAppointment.DTO);
             }
             catch (Exception ex)
             {
