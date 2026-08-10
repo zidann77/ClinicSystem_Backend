@@ -16,6 +16,17 @@ namespace BackendClinicProject
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("ClinicApiCorsPolicy", policy =>
+                {
+                    policy
+                        .WithOrigins("https://localhost:7037", "http://localhost:5130")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            }); // before builder.Build()   
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -25,7 +36,11 @@ namespace BackendClinicProject
                 app.UseSwaggerUI();
             }
 
+          
+
             app.UseHttpsRedirection();
+
+            app.UseCors("ClinicApiCorsPolicy"); // before UseAuthorization
 
             app.UseAuthorization();
 
