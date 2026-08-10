@@ -48,7 +48,7 @@ namespace BackendClinicProject.Controllers
                 if (invoice == null)
                     return NotFound($"Invoice with ID {id} not found.");
                 else
-                    return Ok(invoice);
+                    return Ok(invoice.DTO);
             }
             catch (Exception ex)
             {
@@ -103,7 +103,7 @@ namespace BackendClinicProject.Controllers
                 if (!isAdded)
                     return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding the invoice.");
                 else
-                    return CreatedAtAction("GetDoctorByID", new { id = invoice.ID }, invoice);
+                    return CreatedAtAction("GetDoctorByID", new { id = invoice.ID }, invoice.DTO);
             }
             catch (Exception ex)
             {
@@ -121,7 +121,7 @@ namespace BackendClinicProject.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult UpdateInvoice(int id, [FromBody] InvoiceDTO invoiceDTO)
         {
-            if (id <= 0 || invoiceDTO == null || id != invoiceDTO.ID)
+            if (id <= 0 || invoiceDTO == null || id <=0)
                 return BadRequest("Invalid ID or invoice data.");
             try
             {
