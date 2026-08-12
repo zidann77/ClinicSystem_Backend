@@ -14,5 +14,6 @@ namespace ClinicDTO
         public string Password { get; set; } = string.Empty;
         public bool Active { get; set; }
         public DateTime? LastSeen { get; set; }
+        public int? RoleID { get; set; }
     }
 }

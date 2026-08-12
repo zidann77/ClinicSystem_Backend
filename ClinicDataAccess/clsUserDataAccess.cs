@@ -32,8 +32,14 @@ namespace ClinicDataAccess
                             UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
-                            Password = string.Empty // لا نرجع الباسورد في القوائم
+                            // RoleID = (int?)reader["RoleID"],
+                            RoleID = reader.IsDBNull(reader.GetOrdinal("RoleID"))
+    ? null
+    : reader.GetInt32(reader.GetOrdinal("RoleID")),
+                            Password = string.Empty // Password is not retrieved for security reasons
+
                         });
+
                     }
                 }
             }
@@ -66,7 +72,12 @@ namespace ClinicDataAccess
                             SecondName = reader["SecondName"].ToString() ?? string.Empty,
                             LastName = reader["LastName"].ToString() ?? string.Empty,
                             Phone = clsAesEncryptionService.Decrypt(reader["Phone"]?.ToString() ?? string.Empty, EncryptionKey),
-                            Email = (reader["Email"] == DBNull.Value || string.IsNullOrWhiteSpace(reader["Email"].ToString())) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Email"].ToString() ?? string.Empty, EncryptionKey)
+                            Email = (reader["Email"] == DBNull.Value || string.IsNullOrWhiteSpace(reader["Email"].ToString())) ? string.Empty : clsAesEncryptionService.Decrypt(reader["Email"].ToString() ?? string.Empty, EncryptionKey),
+                            //  RoleID = (int?)reader["RoleID"],
+                            RoleID = reader.IsDBNull(reader.GetOrdinal("RoleID"))
+    ? null
+    : reader.GetInt32(reader.GetOrdinal("RoleID")),
+                            RoleName = reader["RoleName"].ToString() ?? string.Empty
                         });
                     }
                 }
@@ -75,24 +86,6 @@ namespace ClinicDataAccess
         }
 
         
-        public static string GetHashedPassword(string userName, int ID)
-        {
-            string passwordHash = string.Empty;
-
-            using SqlConnection con = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            using SqlCommand cmd = new SqlCommand("usr.GetUserPassword", con);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@UserName", userName);
-            cmd.Parameters.AddWithValue("@Id", ID);
-
-            con.Open();
-            object result = cmd.ExecuteScalar();
-
-            if (result != null && result != DBNull.Value)
-                passwordHash = result.ToString() ?? string.Empty;
-
-            return passwordHash;
-        }
 
      
         public static int AddUser(UserDTO user)
@@ -106,6 +99,7 @@ namespace ClinicDataAccess
             cmd.Parameters.AddWithValue("@Password", clsPasswordHasher.HashPassword(user.Password));
             cmd.Parameters.AddWithValue("@Active", user.Active);
             cmd.Parameters.AddWithValue("@LastSeen", user.LastSeen ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@RoleID", user.RoleID);
 
             SqlParameter outputId = new SqlParameter("@NewID", SqlDbType.Int)
             {
@@ -140,7 +134,13 @@ namespace ClinicDataAccess
                             UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
-                            Password = string.Empty 
+                            Password = string.Empty ,
+                            //   RoleID = (int?)reader["RoleID"]
+                            RoleID = reader.IsDBNull(reader.GetOrdinal("RoleID"))
+    ? null
+    : reader.GetInt32(reader.GetOrdinal("RoleID")),
+                            PersonID = (int)reader["PersonID"]
+
                         };
                     }
                 }
@@ -170,7 +170,11 @@ namespace ClinicDataAccess
                             UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
-                            Password = string.Empty 
+                            Password = string.Empty ,
+                            //  RoleID = (int?)reader["RoleID"]
+                            RoleID = reader.IsDBNull(reader.GetOrdinal("RoleID"))
+    ? null
+    : reader.GetInt32(reader.GetOrdinal("RoleID"))
                         };
                     }
                 }
@@ -189,6 +193,8 @@ namespace ClinicDataAccess
             cmd.Parameters.AddWithValue("@UserName", user.UserName);
             cmd.Parameters.AddWithValue("@Active", user.Active);
             cmd.Parameters.AddWithValue("@LastSeen", user.LastSeen.HasValue ? user.LastSeen.Value: DBNull.Value);
+            cmd.Parameters.AddWithValue("@RoleID", user.RoleID);
+            cmd.Parameters.AddWithValue("@PersonID", user.PersonID);
 
             con.Open();
             return cmd.ExecuteNonQuery() > 0;
@@ -237,7 +243,12 @@ namespace ClinicDataAccess
                             UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
-                            Password = reader["StoredHash"]?.ToString() ?? string.Empty
+                            Password = reader["StoredHash"]?.ToString() ?? string.Empty,
+                            //   RoleID = (int?)reader["RoleID"]
+                            RoleID = reader.IsDBNull(reader.GetOrdinal("RoleID"))
+    ? null
+    : reader.GetInt32(reader.GetOrdinal("RoleID")),
+                            PersonID = (int)reader["PersonID"]
                         };
                     }
                 }

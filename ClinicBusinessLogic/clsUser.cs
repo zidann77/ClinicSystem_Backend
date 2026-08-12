@@ -25,7 +25,8 @@ namespace ClinicBusinessLogic
         public string Phone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
-       
+        public int? RoleID { get; set; }    
+
         public clsUser()
         {
             
@@ -36,18 +37,20 @@ namespace ClinicBusinessLogic
             this.Active = true;
             this.LastSeen = null;
             this.PersonINFO = new clsPerson();
+            RoleID = null;
             Mode = enMode.AddNew;
         }
 
         private clsUser(UserDTO dto)
         {
-           
+
             this.UserID = dto.ID;
             this.PersonINFO = clsPerson.Find(dto.PersonID) ?? new clsPerson();
             this.UserName = dto.UserName;
             this.Active = dto.Active;
             this.LastSeen = dto.LastSeen;
-            this.Password = string.Empty;
+            this.Password = dto.Password;
+            this.RoleID = dto.RoleID;
             Mode = enMode.Update;
         }
 
@@ -65,6 +68,7 @@ namespace ClinicBusinessLogic
             this.LastName = dto.LastName;
             this.Email = string.IsNullOrEmpty(dto.Email) ? string.Empty : dto.Email; // can be empty not null
             this.Phone = string.IsNullOrEmpty(dto.Phone) ? string.Empty : dto.Phone;
+            this.RoleID = dto.RoleID;   
             this.Mode = enMode.Update;
         }
 
@@ -82,7 +86,9 @@ namespace ClinicBusinessLogic
                 UserName = this.UserName,
                 Password = this.Password,
                 Active = this.Active,
-                LastSeen = this.LastSeen
+                LastSeen = this.LastSeen,
+                RoleID = this.RoleID
+
             };
 
             this.UserID = clsUserDataAccess.AddUser(dto);
@@ -96,7 +102,8 @@ namespace ClinicBusinessLogic
                 ID = this.UserID,
                 UserName = this.UserName,
                 Active = this.Active,
-                LastSeen = this.LastSeen
+                LastSeen = this.LastSeen,
+                RoleID = this.RoleID
             };
 
             return clsUserDataAccess.UpdateUserBasicInfo(dto);
@@ -153,9 +160,9 @@ namespace ClinicBusinessLogic
 
         // login
 
-        public static clsUser? Login(string userName, string password)
+        public static clsUser? Login(string userName)
         {
-            UserDTO? User = clsUserDataAccess.LogInUser(userName, password);
+            UserDTO? User = clsUserDataAccess.GetUserByUserName(userName);
 
             if (User != null)
             {
@@ -177,7 +184,8 @@ namespace ClinicBusinessLogic
                 PersonID = PersonINFO.PersonID,
                 UserName = this.UserName,
                 Active = this.Active,
-                LastSeen = this.LastSeen
+                LastSeen = this.LastSeen,
+                RoleID = this.RoleID    
             };
 
         }
@@ -195,9 +203,16 @@ namespace ClinicBusinessLogic
                 SecondName = this.SecondName,
                 LastName = this.LastName,
                 Email = this.Email != null ? this.Email : string.Empty,
-                Phone = this.Phone
+                Phone = this.Phone,
+                RoleID = this.RoleID
             };
 
+        }
+
+        public UserDTO? GetUserByUserName(string username)
+        {
+            var dto = clsUserDataAccess.GetUserByUserName(username);
+            return dto;
         }
     }
 }

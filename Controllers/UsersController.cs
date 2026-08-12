@@ -36,7 +36,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [HttpGet("AllUsersFull", Name = "GetAllUsersView")]
+        [HttpGet("AllUsersFullData", Name = "GetAllUsersView")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -94,6 +94,8 @@ namespace BackendClinicProject.Controllers
                 return StatusCode(500, "An error occurred while retrieving the user from the server.");
             }
         }
+
+
 
         [HttpPost("AddNew", Name = "AddUser")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -229,54 +231,54 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [HttpPost("Login")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<UserDTO> Login([FromBody] LoginRequestDTO loginRequest)
-        {
-            if (loginRequest == null || string.IsNullOrEmpty(loginRequest.UserName) || string.IsNullOrEmpty(loginRequest.Password))
-            {
-                return BadRequest("Username and Password are required.");
-            }
+        //[HttpPost("Login")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //public ActionResult<UserDTO> Login([FromBody] LoginRequestDTO loginRequest)
+        //{
+        //    if (loginRequest == null || string.IsNullOrEmpty(loginRequest.UserName) || string.IsNullOrEmpty(loginRequest.Password))
+        //    {
+        //        return BadRequest("Username and Password are required.");
+        //    }
 
-            try
-            {
-                clsUser? user = clsUser.Login(loginRequest.UserName, loginRequest.Password);
+        //    try
+        //    {
+        //        clsUser? user = clsUser.Login(loginRequest.UserName, loginRequest.Password);
 
-                if (user == null)
-                {
-                    return Unauthorized("Invalid username or password.");
-                }
+        //        if (user == null)
+        //        {
+        //            return Unauthorized("Invalid username or password.");
+        //        }
 
-                if (!user.Active)
-                {
-                    return StatusCode(StatusCodes.Status403Forbidden, "This user account is deactivated.");
-                }
+        //        if (!user.Active)
+        //        {
+        //            return StatusCode(StatusCodes.Status403Forbidden, "This user account is deactivated.");
+        //        }
 
-                UserDTO loggedInUser = new UserDTO
-                {
-                    ID = user.UserID,
-                    PersonID = user.PersonINFO.PersonID,
-                    UserName = user.UserName,
-                    Active = user.Active,
-                    LastSeen = user.LastSeen
-                };
+        //        UserDTO loggedInUser = new UserDTO
+        //        {
+        //            ID = user.UserID,
+        //            PersonID = user.PersonINFO.PersonID,
+        //            UserName = user.UserName,
+        //            Active = user.Active,
+        //            LastSeen = user.LastSeen
+        //        };
 
-                return Ok(loggedInUser);
-            }
-            catch (Exception ex)
-            {
-                clsLogger.LogException(ex, $"Error occurred during login process for username: {loginRequest.UserName}.");
-                return StatusCode(500, "An error occurred during the login process.");
-            }
-        }
+        //        return Ok(loggedInUser);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        clsLogger.LogException(ex, $"Error occurred during login process for username: {loginRequest.UserName}.");
+        //        return StatusCode(500, "An error occurred during the login process.");
+        //    }
+        //}
     }
 
-    public class LoginRequestDTO
+  /*  public class LoginRequestDTO
     {
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-    }
+    }*/
 }
