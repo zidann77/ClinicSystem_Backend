@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ClinicDTO;
+﻿using BackendClinicProject.GlobalClasses;
 using ClinicBusinessLogic;
-using BackendClinicProject.GlobalClasses;
+using ClinicDTO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace BackendClinicProject
     [ApiController]
     public class PeopleController : ControllerBase
     {
+        [Authorize]
         [HttpGet("AllPeople", Name = "GetAllPeople")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,6 +39,7 @@ namespace BackendClinicProject
             }
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetPersonByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -68,6 +71,7 @@ namespace BackendClinicProject
             }
         }
 
+        [Authorize]
         [HttpPost("AddNew", Name = "AddPerson")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,6 +109,7 @@ namespace BackendClinicProject
             }
         }
 
+        [Authorize]
         [HttpPut("{id}", Name = "UpdatePerson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -145,6 +150,7 @@ namespace BackendClinicProject
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}", Name = "DeletePerson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

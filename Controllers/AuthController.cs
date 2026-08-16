@@ -37,15 +37,16 @@ namespace BackendClinicProject.Controllers
                     return Unauthorized("Invalid credentials");
 
                 // Step 3: Fetch the user's role
-                var role = clsRole.Find(user.RoleID ?? 0);
-                string roleName = role != null ? role.RoleName : "User";
+                //var role = clsRole.Find(user.RoleID ?? 0);
+                //string roleName = role != null ? role.RoleName : "User";
+
 
                 // Step 4: Create claims
                 var claims = new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Role, roleName)
+                    new Claim(ClaimTypes.Role, user.RoleName)
                 };
 
                 // Step 5: Create key
@@ -60,7 +61,7 @@ namespace BackendClinicProject.Controllers
                     issuer: "ClinicApi",
                     audience: "ClinicApiUsers",
                     claims: claims,
-                    expires: DateTime.Now.AddDays(7),
+                    expires: DateTime.Now.AddMinutes(30),
                     signingCredentials: creds
                 );
 

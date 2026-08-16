@@ -3,6 +3,7 @@ using ClinicDTO;
 using SecurityLayer;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace ClinicBusinessLogic
 {
@@ -10,6 +11,8 @@ namespace ClinicBusinessLogic
     {
         public  enum enMode { AddNew = 0, Update = 1 };
         public  enMode Mode = enMode.AddNew;
+
+        public enum enRole {  User = 0, Admin = 1, Doctor = 2, Receptionist = 3, Accountant = 4, Patient = 5 };
 
         public int UserID { get; set; }
         public string UserName { get; set; } = string.Empty;
@@ -26,6 +29,8 @@ namespace ClinicBusinessLogic
         public string Email { get; set; } = string.Empty;
 
         public int? RoleID { get; set; }    
+
+        public string RoleName { get { return ((enRole)(RoleID ?? 0)).ToString(); } }
 
         public clsUser()
         {

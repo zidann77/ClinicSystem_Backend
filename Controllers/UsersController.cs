@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ClinicDTO;
+﻿using BackendClinicProject.GlobalClasses;
 using ClinicBusinessLogic;
-using BackendClinicProject.GlobalClasses;
+using ClinicDTO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        [Authorize]
         [HttpGet("AllUsers", Name = "GetAllUsers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,6 +38,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("AllUsersFullData", Name = "GetAllUsersView")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -59,6 +62,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetUserByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -95,8 +99,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-
-
+        [Authorize]
         [HttpPost("AddNew", Name = "AddUser")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -121,7 +124,9 @@ namespace BackendClinicProject.Controllers
                     UserName = newUserDTO.UserName,
                     Password = newUserDTO.Password,
                     Active = newUserDTO.Active,
-                    LastSeen = newUserDTO.LastSeen
+                    LastSeen = newUserDTO.LastSeen,
+                    RoleID = newUserDTO.RoleID
+
                 };
 
                 if (user.Save())
@@ -147,6 +152,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id}", Name = "UpdateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -176,6 +182,7 @@ namespace BackendClinicProject.Controllers
                 user.UserName = updatedUserDTO.UserName;
                 user.Active = updatedUserDTO.Active;
                 user.LastSeen = updatedUserDTO.LastSeen;
+                user.RoleID = updatedUserDTO.RoleID;
 
                 if (user.Save())
                 {
@@ -185,7 +192,9 @@ namespace BackendClinicProject.Controllers
                         PersonID = user.PersonINFO.PersonID,
                         UserName = user.UserName,
                         Active = user.Active,
-                        LastSeen = user.LastSeen
+                        LastSeen = user.LastSeen,
+                        RoleID = user.RoleID
+
                     };
 
                     return Ok(resultDTO);
@@ -200,6 +209,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}", Name = "DeleteUser")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

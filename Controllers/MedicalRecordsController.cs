@@ -1,6 +1,7 @@
 ﻿using BackendClinicProject.GlobalClasses;
 using ClinicBusinessLogic;
 using ClinicDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class MedicalRecordsController : ControllerBase
     {
+        [Authorize]
         [HttpGet("AllMedicalRecords", Name = "GetAllMedicalRecords")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -32,6 +34,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetMedicalRecordById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -54,6 +57,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("AddMedicalRecord", Name = "AddMedicalRecord")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,6 +91,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id}", Name = "UpdateMedicalRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -123,6 +128,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}", Name = "DeleteMedicalRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

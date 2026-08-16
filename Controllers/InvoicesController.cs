@@ -1,6 +1,7 @@
 ﻿using BackendClinicProject.GlobalClasses;
 using ClinicBusinessLogic;
 using ClinicDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class InvoicesController : ControllerBase
     {
+        [Authorize]
         [HttpGet("AllInvoices", Name = "GetAllInvoices")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -32,6 +34,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetInvoiceById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,6 +61,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}", Name = "DeleteInvoiceById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -81,7 +85,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpPost("AddNew", Name = "AddInvoice")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -114,6 +118,7 @@ namespace BackendClinicProject.Controllers
 
         }
 
+        [Authorize]
         [HttpPut("{id}", Name = "UpdateInvoice")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

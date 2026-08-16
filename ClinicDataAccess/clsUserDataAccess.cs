@@ -99,7 +99,7 @@ namespace ClinicDataAccess
             cmd.Parameters.AddWithValue("@Password", clsPasswordHasher.HashPassword(user.Password));
             cmd.Parameters.AddWithValue("@Active", user.Active);
             cmd.Parameters.AddWithValue("@LastSeen", user.LastSeen ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@RoleID", user.RoleID);
+            cmd.Parameters.AddWithValue("@RoleID", user.RoleID ?? (object)DBNull.Value);
 
             SqlParameter outputId = new SqlParameter("@NewID", SqlDbType.Int)
             {
@@ -134,7 +134,7 @@ namespace ClinicDataAccess
                             UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
-                            Password = string.Empty ,
+                            Password = reader["Password"].ToString()??string.Empty,
                             //   RoleID = (int?)reader["RoleID"]
                             RoleID = reader.IsDBNull(reader.GetOrdinal("RoleID"))
     ? null
@@ -170,7 +170,7 @@ namespace ClinicDataAccess
                             UserName = reader["UserName"].ToString() ?? string.Empty,
                             Active = (bool)reader["Active"],
                             LastSeen = reader["LastSeen"] as DateTime?,
-                            Password = string.Empty ,
+                            Password = reader["Password"].ToString() ?? string.Empty,
                             //  RoleID = (int?)reader["RoleID"]
                             RoleID = reader.IsDBNull(reader.GetOrdinal("RoleID"))
     ? null

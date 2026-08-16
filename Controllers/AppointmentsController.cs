@@ -1,6 +1,7 @@
 ﻿using BackendClinicProject.GlobalClasses;
 using ClinicBusinessLogic;
 using ClinicDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class AppointmentsController : ControllerBase
     {
-
+        [Authorize]
         [HttpGet("AllAppointments", Name = "GetAllAppointments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,9 +37,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-
-
-
+        [Authorize]
         [HttpGet("{id}", Name = "GetAppointmentById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -70,8 +69,7 @@ namespace BackendClinicProject.Controllers
         }
 
 
-
-
+        [Authorize]
         [HttpDelete("{id}", Name = "DeleteAppointmentById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -102,8 +100,7 @@ namespace BackendClinicProject.Controllers
         }
 
 
-
-
+        [Authorize]
         [HttpPost("AddNew", Name = "AddAppointment")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -153,8 +150,7 @@ namespace BackendClinicProject.Controllers
         }
 
 
-
-
+        [Authorize]
         [HttpPut("{id}", Name = "UpdateAppointment")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

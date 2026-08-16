@@ -1,8 +1,9 @@
-﻿using ClinicBusinessLogic;
+﻿using BackendClinicProject.GlobalClasses;
+using ClinicBusinessLogic;
 using ClinicDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using BackendClinicProject.GlobalClasses;
 using System.Collections.Generic;
 
 namespace BackendClinicProject.Controllers
@@ -11,7 +12,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class PatientController : ControllerBase
     {
-
+        [Authorize]
         [HttpGet("AllPatients", Name = "GetAllPatients")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,7 +37,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet("AllPatientsView", Name = "GetAllPatientView")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,7 +62,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet("{id}", Name = "GetPatientByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -93,6 +94,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("AddNew", Name = "AddNewPatient")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -135,7 +137,7 @@ namespace BackendClinicProject.Controllers
 
         }
 
-
+        [Authorize]
         [HttpPut("{id}", Name = "UpdatePatient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -176,6 +178,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}", Name = "DeletePatient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
