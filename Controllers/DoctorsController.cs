@@ -11,7 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class DoctorsController : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin, User, Receptionist, Doctor")]
         [HttpGet("AllDoctors",Name ="GetAllDoctors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -34,7 +34,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist, Doctor")]
         [HttpGet("AllDoctorsView", Name = "GetAllDoctorsView")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -57,7 +57,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize (Roles ="Admin,User,Receptionist,Doctor")]
         [HttpGet("{id}", Name = "GetDoctorById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,7 +85,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}", Name = "DeleteDoctor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -113,7 +113,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,User")]
         [HttpPost ("AddNew", Name = "AddDoctor")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -148,7 +148,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,User,Doctor")]
         [HttpPut("{id}", Name = "UpdateDoctor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

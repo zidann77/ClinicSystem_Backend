@@ -11,7 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class AppointmentsController : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin, Doctor, User ,  Receptionist")]
         [HttpGet("AllAppointments", Name = "GetAllAppointments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,7 +37,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Doctor, User , Receptionist ")]
         [HttpGet("{id}", Name = "GetAppointmentById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -69,7 +69,7 @@ namespace BackendClinicProject.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Roles = "Admin, User , Receptionist")]
         [HttpDelete("{id}", Name = "DeleteAppointmentById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,7 +100,7 @@ namespace BackendClinicProject.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Roles = "Admin , Doctor , User , Receptionist")]
         [HttpPost("AddNew", Name = "AddAppointment")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -150,7 +150,7 @@ namespace BackendClinicProject.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Doctor , User , Receptionist")]
         [HttpPut("{id}", Name = "UpdateAppointment")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

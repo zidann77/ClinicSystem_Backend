@@ -11,7 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class InvoicesController : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin,User, Receptionist")]
         [HttpGet("AllInvoices", Name = "GetAllInvoices")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -34,7 +34,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,User, Receptionist")]
         [HttpGet("{id}", Name = "GetInvoiceById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,7 +61,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}", Name = "DeleteInvoiceById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -85,7 +85,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,User,Receptionist")]
         [HttpPost("AddNew", Name = "AddInvoice")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -118,7 +118,7 @@ namespace BackendClinicProject.Controllers
 
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,User,Receptionist")]
         [HttpPut("{id}", Name = "UpdateInvoice")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -14,7 +14,7 @@ namespace BackendClinicProject
     [ApiController]
     public class PeopleController : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist")]
         [HttpGet("AllPeople", Name = "GetAllPeople")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -39,7 +39,7 @@ namespace BackendClinicProject
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist")]
         [HttpGet("{id}", Name = "GetPersonByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +71,7 @@ namespace BackendClinicProject
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist")]
         [HttpPost("AddNew", Name = "AddPerson")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -109,7 +109,7 @@ namespace BackendClinicProject
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist")]
         [HttpPut("{id}", Name = "UpdatePerson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -150,7 +150,7 @@ namespace BackendClinicProject
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}", Name = "DeletePerson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

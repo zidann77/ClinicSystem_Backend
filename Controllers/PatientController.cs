@@ -12,7 +12,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class PatientController : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin, Doctor, User, Receptionist")]
         [HttpGet("AllPatients", Name = "GetAllPatients")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,7 +37,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Doctor, User, Receptionist")]
         [HttpGet("AllPatientsView", Name = "GetAllPatientView")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -62,7 +62,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Doctor, User, Receptionist")]
         [HttpGet("{id}", Name = "GetPatientByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,7 +94,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,User,Receptionist")]
         [HttpPost("AddNew", Name = "AddNewPatient")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -137,7 +137,7 @@ namespace BackendClinicProject.Controllers
 
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist")]
         [HttpPut("{id}", Name = "UpdatePatient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -178,7 +178,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}", Name = "DeletePatient")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

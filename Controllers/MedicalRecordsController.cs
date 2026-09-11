@@ -11,7 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class MedicalRecordsController : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist, Doctor ")]
         [HttpGet("AllMedicalRecords", Name = "GetAllMedicalRecords")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -34,7 +34,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist, Doctor ")]
         [HttpGet("{id}", Name = "GetMedicalRecordById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -57,7 +57,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Receptionist, Doctor ")]
         [HttpPost("AddMedicalRecord", Name = "AddMedicalRecord")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -91,7 +91,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin , User , Doctor ")]
         [HttpPut("{id}", Name = "UpdateMedicalRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -128,7 +128,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}", Name = "DeleteMedicalRecord")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
