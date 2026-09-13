@@ -37,7 +37,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin, Doctor, User , Receptionist ")]
+        [Authorize(Roles = "Admin, Doctor, User , Receptionist , Patient")]
         [HttpGet("{id}", Name = "GetAppointmentById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

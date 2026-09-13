@@ -11,7 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class MedicalRecordsController : ControllerBase
     {
-        [Authorize(Roles = "Admin , User , Receptionist, Doctor ")]
+        [Authorize(Roles = "Admin , User , Receptionist, Doctor")]
         [HttpGet("AllMedicalRecords", Name = "GetAllMedicalRecords")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -34,7 +34,7 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin , User , Receptionist, Doctor ")]
+        [Authorize(Roles = "Admin , User , Receptionist, Doctor ,Patient")]
         [HttpGet("{id}", Name = "GetMedicalRecordById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -11,7 +11,7 @@ namespace BackendClinicProject.Controllers
     [ApiController]
     public class DoctorsController : ControllerBase
     {
-        [Authorize(Roles = "Admin, User, Receptionist, Doctor")]
+        [Authorize(Roles = "Admin, User, Receptionist, Doctor , Patient")]
         [HttpGet("AllDoctors",Name ="GetAllDoctors")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
