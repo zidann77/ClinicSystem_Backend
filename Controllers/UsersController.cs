@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace BackendClinicProject.Controllers
 {
@@ -68,6 +69,7 @@ namespace BackendClinicProject.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<UserDTO> GetUserByID(int id)
         {
             if (id <= 0)
@@ -81,6 +83,16 @@ namespace BackendClinicProject.Controllers
                 if (user == null)
                 {
                     return NotFound($"User with ID {id} not found.");
+                }
+
+                if (User.IsInRole("User"))
+                {
+                    int loggedInUserId = int.Parse(
+                        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                    );
+
+                    if (id != loggedInUserId)
+                        return Forbid();
                 }
 
                 return Ok(new UserDTO
@@ -152,12 +164,13 @@ namespace BackendClinicProject.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         [HttpPut("{id}", Name = "UpdateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<UserDTO> UpdateUser(int id, UserDTO updatedUserDTO)
         {
             if (id <= 0 || updatedUserDTO == null || string.IsNullOrEmpty(updatedUserDTO.UserName))
@@ -171,6 +184,16 @@ namespace BackendClinicProject.Controllers
                 if (user == null)
                 {
                     return NotFound($"User with ID {id} not found.");
+                }
+
+                if (User.IsInRole("User"))
+                {
+                    int loggedInUserId = int.Parse(
+                        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                    );
+
+                    if (id != loggedInUserId)
+                        return Forbid();
                 }
 
                 if (user.UserName != updatedUserDTO.UserName && clsUser.IsUserNameExists(updatedUserDTO.UserName))

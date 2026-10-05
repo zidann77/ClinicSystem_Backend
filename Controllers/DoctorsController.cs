@@ -63,6 +63,7 @@ namespace BackendClinicProject.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<DoctorDTO> GetDoctorById(int id)
         {
             if (id <= 0)
@@ -76,7 +77,14 @@ namespace BackendClinicProject.Controllers
                 {
                     return NotFound($"No doctor found with ID {id}.");
                 }
-                return Ok(doctor.DTO);
+                else
+                {
+                    if (User.IsInRole("Doctor") && int.Parse(User.FindFirst("PersonID")?.Value ?? "0") != doctor.PersonINFO.PersonID)
+                    {
+                        return Forbid("You are not authorized to access this doctor's information.");
+                    }
+                }
+                    return Ok(doctor.DTO);
             }
             catch (Exception ex)
             {
@@ -154,6 +162,7 @@ namespace BackendClinicProject.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult UpdateDoctor(int id, DoctorDTO updatedDoctorDTO)
         {
             if (id <= 0 || updatedDoctorDTO == null || id != updatedDoctorDTO.ID)
@@ -166,6 +175,10 @@ namespace BackendClinicProject.Controllers
                 if (existingDoctor == null)
                 {
                     return NotFound($"No doctor found with ID {id}.");
+                }
+                if (User.IsInRole("Doctor") && int.Parse(User.FindFirst("PersonID")?.Value ?? "0") != existingDoctor.PersonINFO.PersonID)
+                {
+                    return Forbid("You are not authorized to update this doctor's information.");
                 }
                 existingDoctor.PersonINFO = new clsPerson { PersonID = updatedDoctorDTO.PersonID };
                 existingDoctor.Specialization = updatedDoctorDTO.Specialization;

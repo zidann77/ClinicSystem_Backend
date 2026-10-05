@@ -42,13 +42,19 @@ namespace BackendClinicProject.Controllers
 
 
                 // Step 4: Create claims
+                //var claims = new[]
+                //{
+                //    new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                //    new Claim(ClaimTypes.Name, user.UserName),
+                //    new Claim(ClaimTypes.Role, user.RoleName)
+                //};
                 var claims = new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Role, user.RoleName)
+{
+    new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+    new Claim(ClaimTypes.Name, user.UserName),
+    new Claim(ClaimTypes.Role, user.RoleName),
+    new Claim("PersonID", user.PersonINFO.PersonID.ToString())
                 };
-
                 // Step 5: Create key
                 var key = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456789_MUST_BE_LONG"));

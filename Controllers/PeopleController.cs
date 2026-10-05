@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace BackendClinicProject
 {
@@ -39,11 +40,12 @@ namespace BackendClinicProject
             }
         }
 
-        [Authorize(Roles = "Admin , User , Receptionist")]
+        [Authorize(Roles = "Admin , User , Receptionist , Doctor , Patient")]
         [HttpGet("{id}", Name = "GetPersonByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<PeopleDTO> GetPersonByID(int id)
         {
@@ -61,8 +63,18 @@ namespace BackendClinicProject
                 }
                 else
                 {
-                    return Ok(Person.ToDTO());
+                    if(!User.IsInRole("Admin"))
+                    {
+                        if(int.Parse(User.FindFirst("PersonID")?.Value ?? "0") != Person.PersonID)
+                        {
+                            return Forbid("You are not authorized to access this person's information.");
+                        }
+                    }
                 }
+
+
+                    return Ok(Person.ToDTO());
+                
             }
             catch (Exception ex)
             {
@@ -109,11 +121,12 @@ namespace BackendClinicProject
             }
         }
 
-        [Authorize(Roles = "Admin , User , Receptionist")]
+        [Authorize(Roles = "Admin , User , Receptionist , Doctor , Patient")]
         [HttpPut("{id}", Name = "UpdatePerson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<PeopleDTO> UpdatePerson(int id, PeopleDTO updatedPersonDTO)
         {
@@ -127,6 +140,13 @@ namespace BackendClinicProject
                 if (Updateperson == null)
                 {
                     return NotFound("Person not found.");
+                }
+                if (!User.IsInRole("Admin"))
+                {
+                    if (int.Parse(User.FindFirst("PersonID")?.Value ?? "0") != Updateperson.PersonID)
+                    {
+                        return Forbid("You are not authorized to access this person's information.");
+                    }
                 }
                 Updateperson.FirstName = updatedPersonDTO.FirstName;
                 Updateperson.SecondName = updatedPersonDTO.SecondName;

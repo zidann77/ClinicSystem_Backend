@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace BackendClinicProject.Controllers
 {
@@ -68,6 +69,7 @@ namespace BackendClinicProject.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<PatientDTO> GetPatientById(int id)
         {
             try
@@ -78,6 +80,17 @@ namespace BackendClinicProject.Controllers
                 }
 
                 var patient = clsPatient.Find(id);
+
+                if(User.IsInRole("Patient"))
+                {
+                    int loggedInUserId = int.Parse(
+                        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                    );
+                    if(loggedInUserId != id)
+                    {
+                        return Forbid("You are not authorized to access this patient's data.");
+                    }
+                }
 
                 if (patient == null)
                 {
@@ -143,6 +156,7 @@ namespace BackendClinicProject.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult UpdatePatient(int id, PatientDTO updatedPatientDTO)
         {
             try
@@ -157,6 +171,17 @@ namespace BackendClinicProject.Controllers
                 if (patient == null)
                 {
                     return NotFound($"Patient with ID {id} not found.");
+                }
+
+                if (User.IsInRole("Patient"))
+                {
+                    int loggedInUserId = int.Parse(
+                        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                    );
+                    if (loggedInUserId != id)
+                    {
+                        return Forbid("You are not authorized to access this patient's data.");
+                    }
                 }
 
 
